@@ -1,7 +1,10 @@
 var TinyURL = require('tinyurl');
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import axios from 'axios';
+
+import { createShortUrl } from "./APIHelper";
 
 class URLShortener extends React.Component {	
 	constructor(props) {
@@ -10,26 +13,17 @@ class URLShortener extends React.Component {
 		this.ShortenURL = this.ShortenURL.bind(this);
 				
 		this.state={
-			Endpoint:"https://www.jsonstore.io/0a0a2a040bf84c3ce45a12f0c53fd111f0433479eda96f13fa0d5ccfe73e452e",
-			Request:"",
 			URL_Long:"",
 			URL_Long_OK:false,
-			URL_Short:""
+			URL_Short:"",
+			apiUrl: "http://localhost:7000/api/",
+			baseUrl: "http://localhost"
 		}
-	}
-	CreateNewAddress() {    
-		var text = "";    
-		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";   
-		for (var i = 0; i < 5; i++)        
-		{
-			text += possible.charAt(Math.floor(Math.random() * possible.length));    
-		}
-		
-		return text;
 	}
 	
 	ValidateURL(url)
 	{
+		console.log("ValidateURL");
 		if(url === "undefined" || url==="") {
 			alert("URL Input is Empty");
 			return false;		
@@ -57,44 +51,24 @@ class URLShortener extends React.Component {
 	
 	BuildShortURL()
 	{		
-		/*
-		//using jsonstore.io to generate my own short URL. The server was to unstable for constant use.
+		console.log("BuildShortURL");
 		
-		this.setState({Request:this.state.Endpoint + "/" + this.CreateNewAddress().substr(1)});
+		let url = this.state.apiUrl + "item"
 		
-		axios.post(this.state.Request, {
-			longURL : JSON.stringify(this.state.URL_Long)
-		})
+		axios.post(url)
 		.then((response)=>{
 			console.log(response);
-			axios.get(this.state.Request)
-			.then((resoibse)=>{
-				console.log(response);
-				this.setState({URL_Short:reponse.result.longurl});
-			})
-			.catch((error)=>
-			{
-				console.log(error);
-			})
 		})
 		.catch((error)=>
 		{
-			console.log(error)
+			alert(error);
 		});
-		*/	  
-	  
-		//using TinyURL to create short URLs
-		TinyURL.shorten(this.state.URL_Long)
-		.then((res) => {
-			this.setState({URL_Short:res});		
-		}, function(err) {
-			this.setState({URL_Short:""});	
-			alert(err);
-		})
+		
 	}
 	
 	GetLongURL()
 	{
+		console.log("GetLongURL");
 	  axios.get(this.state.URL_Long)
 		.then((response) => {
 			if(response.status==200)
@@ -108,6 +82,7 @@ class URLShortener extends React.Component {
 	
 	ShortenURL()
 	{
+		console.log("ShortenURL");
 		//main function for shortening URL
 		let valid = this.ValidateURL(document.getElementById("urlLong").value);
 		if(valid)
