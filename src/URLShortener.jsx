@@ -7,6 +7,8 @@ class URLShortener extends React.Component {
 	constructor(props) {
 		super(props);		
 		
+		this.ShortenURL = this.ShortenURL.bind(this);
+				
 		this.state={
 			Endpoint:"https://www.jsonstore.io/0a0a2a040bf84c3ce45a12f0c53fd111f0433479eda96f13fa0d5ccfe73e452e",
 			Request:"",
@@ -28,26 +30,19 @@ class URLShortener extends React.Component {
 	
 	ValidateURL(url)
 	{
+		console.log("ValidateURL");
 		if(url === "undefined" || url==="") {
 			alert("URL Input is Empty");
 			return false;		
 		}
 		
-		if(url === this.state.URL_Long)
+		if(!url.includes("http://"))
 		{
-			if(this.state.URL_Long_OK)
-			{
-				alert("This URL has already been validated.");
-				return true;
-			}
-			else
-			{
-				alert("This URL is identical to the one just entered.")
-			}
+			url = "https://" + url;
 		}
 		
 		//using RegEx code to verify that the URL is properly formatted
-		let regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+		let regex = new RegExp(/^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/gm);
 				
 		
 		if(regex.test(url)){
@@ -56,12 +51,14 @@ class URLShortener extends React.Component {
 		}
 		else
 		{		
+			alert("Invalic URL");
 			return false;
 		}
 	}
 	
 	BuildShortURL()
 	{
+		console.log("BuildShortURL");
 		//using jsonstore.io to generate my own short URL. The server was to unstable for constant use.
 		/*
 		this.setState({Request:this.state.Endpoint + "/" + this.CreateNewAddress().substr(1)});
@@ -85,18 +82,21 @@ class URLShortener extends React.Component {
 		{
 			console.log(error)
 		});
-		*/
+		*/	  
 	  
-		TinyURL.shorten(this.state.URL_Long)		//.then(function(res) {
+		//using TinyURL to create short URLs
+		TinyURL.shorten(this.state.URL_Long)
 		.then((res) => {
 			this.setState({URL_Short:res});		
 		}, function(err) {
+			this.setState({URL_Short:""});	
 			alert(err);
 		})
 	}
 	
 	GetLongURL()
 	{
+		console.log("GetLongURL");
 	  axios.get(this.state.URL_Long)
 		.then((response) => {
 			if(response.status==200)
@@ -110,6 +110,7 @@ class URLShortener extends React.Component {
 	
 	ShortenURL()
 	{
+		console.log("ShortenURL");
 		//main function for shortening URL
 		let valid = this.ValidateURL(document.getElementById("urlLong").value);
 		if(valid)
@@ -123,7 +124,7 @@ class URLShortener extends React.Component {
 		let result;
 		if(this.state.URL_Short !="")
 		{
-			result = <div> Your Shortened URL : <a href={this.state.URL_Short} target="_blank">{this.state.URL_Short}</a></div>
+			result = <div id="results"> Your Shortened URL : <a href={this.state.URL_Short} target="_blank">{this.state.URL_Short}</a></div>
 		}
 		return (
 			<div>
