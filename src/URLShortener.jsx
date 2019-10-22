@@ -1,26 +1,28 @@
 var TinyURL = require('tinyurl');
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import axios from 'axios';
 
 class URLShortener extends React.Component {	
 	constructor(props) {
 		super(props);		
 		
 		this.state={
+			Endpoint:"https://www.jsonstore.io/0a0a2a040bf84c3ce45a12f0c53fd111f0433479eda96f13fa0d5ccfe73e452e",
+			Request:"",
 			URL_Long:"",
 			URL_Long_OK:false,
 			URL_Short:""
 		}
 	}
-	
-	CreateRandomString()
-	{
-		//build the random string for the shortened URL
-		let text = "";
-		let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-		for (let i = 0; i < 5; i++)
-			text += possible.charAt(Math.floor(Math.random() * possible.length));
+	CreateNewAddress() {    
+		var text = "";    
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";   
+		for (var i = 0; i < 5; i++)        
+		{
+			text += possible.charAt(Math.floor(Math.random() * possible.length));    
+		}
+		
 		return text;
 	}
 	
@@ -44,6 +46,7 @@ class URLShortener extends React.Component {
 			}
 		}
 		
+		//using RegEx code to verify that the URL is properly formatted
 		let regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
 				
 		
@@ -59,29 +62,34 @@ class URLShortener extends React.Component {
 	
 	BuildShortURL()
 	{
-		console.log("BuildShortURL");
+		//using jsonstore.io to generate my own short URL. The server was to unstable for constant use.
 		/*
-		//TODO : Not the best solution?
-		let hash = this.CreateRandomString();
+		this.setState({Request:this.state.Endpoint + "/" + this.CreateNewAddress().substr(1)});
 		
-		fetch(this.state.URL_Long  + hash,{
-			method: "POST",
+		axios.post(this.state.Request, {
+			longURL : JSON.stringify(this.state.URL_Long)
 		})
-		.then(res => res.json())
-		.then(
-			(result) => {
-				
-        },
-        (error) => {
-          console.log(error);
-        }
-      )
-	  */
+		.then((response)=>{
+			console.log(response);
+			axios.get(this.state.Request)
+			.then((resoibse)=>{
+				console.log(response);
+				this.setState({URL_Short:reponse.result.longurl});
+			})
+			.catch((error)=>
+			{
+				console.log(error);
+			})
+		})
+		.catch((error)=>
+		{
+			console.log(error)
+		});
+		*/
 	  
-	  TinyURL.shorten(this.state.URL_Long)
-		.then(function(res) {
-			let link = document.getElementById("shortenedURL");
-			link.innerHTML="Your new URL : <a href='"+res+"' target='_blank'>"+res;
+		TinyURL.shorten(this.state.URL_Long)		//.then(function(res) {
+		.then((res) => {
+			this.setState({URL_Short:res});		
 		}, function(err) {
 			alert(err);
 		})
@@ -89,52 +97,41 @@ class URLShortener extends React.Component {
 	
 	GetLongURL()
 	{
-		console.log("GetLongURL " + this.state.URL_Long);
-		fetch(this.state.URL_Long)
-		.then(res => this.setState({URL_Long_OK:res.statusText=="OK"}))
-		.then(
-			(result) => {
-				if(this.state.URL_Long_OK)
-				{
-					console.log("URL found");
-					this.BuildShortURL();
-				}
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      )
+	  axios.get(this.state.URL_Long)
+		.then((response) => {
+			if(response.status==200)
+			{
+				this.setState({URL_Long_OK:true});
+				this.BuildShortURL();
+			}
+		})
+		.catch((error)=>{console.log(error)})
 	}
 	
 	ShortenURL()
 	{
 		//main function for shortening URL
-		console.log("ShortenURL ");			
-		
 		let valid = this.ValidateURL(document.getElementById("urlLong").value);
 		if(valid)
 		{
 			//set up shortened url
 			this.GetLongURL();
 		}
-		else
-		{
-			alert("This is not a valid URL");
-			//something was wrong with the posted url
-		}		
 	}
 
 	render() {
+		let result;
+		if(this.state.URL_Short !="")
+		{
+			result = <div> Your Shortened URL : <a href={this.state.URL_Short} target="_blank">{this.state.URL_Short}</a></div>
+		}
 		return (
 			<div>
 				<h1>URL Shortener</h1>
-				Type or Copy/Paste Your URL : <input id="urlLong" type="text" name="URL_Long" value="http://www.apple.com/iphone-7/"/>
+				Type or Copy/Paste Your URL : <input id="urlLong" type="text" name="URL_Long"/>
 				<br />
 				<button onClick={this.ShortenURL.bind(this)} > Shorten </button>
-				<div id="shortenedURL"> </div>
+				{result}
 			</div>);
 	}
 }
