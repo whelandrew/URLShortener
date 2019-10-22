@@ -13,9 +13,8 @@ module.exports = app => {
       return res.redirect(errorUrl);
     }
   });
-  app.post("/api/item", async (req, res) => {	
+  app.post("/api/item", async (req, res) => {
     const { originalUrl, shortBaseUrl } = req.body;
-	//validate home url format
     if (validUrl.isUri(shortBaseUrl)) {
     } else {
       return res
@@ -24,18 +23,14 @@ module.exports = app => {
           "Invalid Base Url"
         );
     }
-	
-	//create an id for short url
     const urlCode = shortid.generate();
     const updatedAt = new Date();
-	//validate long url format
     if (validUrl.isUri(originalUrl)) {
       try {
         const item = await UrlShorten.findOne({ originalUrl: originalUrl });
         if (item) {
           res.status(200).json(item);
         } else {
-			//build the new object with short url inside
           shortUrl = shortBaseUrl + "/" + urlCode;
           const item = new UrlShorten({
             originalUrl,

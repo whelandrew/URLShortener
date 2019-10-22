@@ -2,94 +2,49 @@ var TinyURL = require('tinyurl');
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import axios from 'axios';
 
 import { createShortUrl } from "./APIHelper";
+import constants from "./config/constants";
 
 class URLShortener extends React.Component {	
 	constructor(props) {
-		super(props);		
-		
-		this.ShortenURL = this.ShortenURL.bind(this);
+		super(props);	
 				
 		this.state={
-			URL_Long:"",
-			URL_Long_OK:false,
-			URL_Short:"",
-			apiUrl: "http://localhost:7000/api/",
-			baseUrl: "http://localhost"
+			URL_Short:""
 		}
 	}
-	
-	ValidateURL(url)
-	{
-		console.log("ValidateURL");
-		if(url === "undefined" || url==="") {
-			alert("URL Input is Empty");
-			return false;		
-		}
-		
-		if(!url.includes("http://"))
-		{
-			url = "https://" + url;
-		}
-		
-		//using RegEx code to verify that the URL is properly formatted
-		let regex = new RegExp(/^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/gm);
-				
-		
-		if(regex.test(url)){
-			this.setState({URL_Long:url});			
-			return true;
-		}
-		else
-		{		
-			alert("Invalic URL");
-			return false;
-		}
-	}
-	
+
 	BuildShortURL()
 	{		
-		console.log("BuildShortURL");
+		console.log("BuildShortURL");			
 		
-		let url = this.state.apiUrl + "item"
+		let reqObj = {
+			originalUrl: document.getElementById("urlLong").value,
+			shortBaseUrl: constants.baseUrl
+		};
 		
-		axios.post(url)
-		.then((response)=>{
-			console.log(response);
-		})
-		.catch((error)=>
-		{
+		createShortUrl(reqObj)
+        .then(json => {
+          setTimeout(() => {
+			  console.log(json.data);
+            this.setState({
+              showLoading: false,
+              showShortenUrl: true,
+              shortenUrl: json.data.shortUrl,
+			  useNewUrlParser: true
+            });
+          }, 0);
+		  this.setState({URL_Short:json.data.shortUrl});
+        })
+        .catch(error => {
 			alert(error);
-		});
-		
-	}
-	
-	GetLongURL()
-	{
-		console.log("GetLongURL");
-	  axios.get(this.state.URL_Long)
-		.then((response) => {
-			if(response.status==200)
-			{
-				this.setState({URL_Long_OK:true});
-				this.BuildShortURL();
-			}
-		})
-		.catch((error)=>{console.log(error)})
-	}
-	
-	ShortenURL()
-	{
-		console.log("ShortenURL");
-		//main function for shortening URL
-		let valid = this.ValidateURL(document.getElementById("urlLong").value);
-		if(valid)
-		{
-			//set up shortened url
-			this.GetLongURL();
-		}
+          this.setState({
+            showLoading: false,
+            showApiError: true,
+            apiError: "Server Error"
+          });
+        });
 	}
 
 	render() {
@@ -103,7 +58,7 @@ class URLShortener extends React.Component {
 				<h1>URL Shortener</h1>
 				Type or Copy/Paste Your URL : <input id="urlLong" type="text" name="URL_Long"/>
 				<br />
-				<button onClick={this.ShortenURL.bind(this)} > Shorten </button>
+				<button onClick={this.BuildShortURL.bind(this)} > Shorten </button>
 				{result}
 			</div>);
 	}

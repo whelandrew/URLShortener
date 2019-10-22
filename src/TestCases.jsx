@@ -6,15 +6,7 @@ import constants from "constants";
 class TestCases extends URLShortener 
 {
 	constructor(props) {
-		super(props);			
-		
-		this.state=
-		{
-			test:true,
-			input:{},
-			URL_Long:"",
-			URL_Short:""
-		}
+		super(props);		
 	}
 	
 	componentDidMount()
@@ -22,26 +14,22 @@ class TestCases extends URLShortener
 		this.setState({input:document.getElementById("urlLong")});		
 	}
 	
-	NormalURL(){
-		this.state.input.value="http://www.apple.com/iphone-7/";
-		this.setState({URL_Long:"http://www.apple.com/iphone-7/"});		
-		this.ShortenURL();
-		
+	NormalURL(){	
+		document.getElementById("urlLong").value = "http://www.apple.com/iphone-7/";
+		this.BuildShortURL();		
 	}
 	
 	MissingHTTP()
 	{
 		console.log("MissingHTTP");
-		this.state.input.value="www.apple.com/iphone-7/";
-		this.setState({URL_Long:"www.apple.com/iphone-7/"});	
-		this.ShortenURL();
+		document.getElementById("urlLong").value = "www.apple.com/iphone-7/";
+		this.BuildShortURL();
 	}
 	Missingcom()
 	{
 		console.log("MissingHTTP");
-		this.state.input.value="http://www.apple";
-		this.setState({URL_Long:"http://www.apple"});	
-		this.ShortenURL();
+		document.getElementById("urlLong").value = "http://www.apple";
+		this.BuildShortURL();
 	}
 	
 	render() {
