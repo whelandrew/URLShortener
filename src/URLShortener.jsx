@@ -30,7 +30,6 @@ class URLShortener extends React.Component {
 	
 	ValidateURL(url)
 	{
-		console.log("ValidateURL");
 		if(url === "undefined" || url==="") {
 			alert("URL Input is Empty");
 			return false;		
@@ -57,10 +56,10 @@ class URLShortener extends React.Component {
 	}
 	
 	BuildShortURL()
-	{
-		console.log("BuildShortURL");
-		//using jsonstore.io to generate my own short URL. The server was to unstable for constant use.
+	{		
 		/*
+		//using jsonstore.io to generate my own short URL. The server was to unstable for constant use.
+		
 		this.setState({Request:this.state.Endpoint + "/" + this.CreateNewAddress().substr(1)});
 		
 		axios.post(this.state.Request, {
@@ -96,7 +95,6 @@ class URLShortener extends React.Component {
 	
 	GetLongURL()
 	{
-		console.log("GetLongURL");
 	  axios.get(this.state.URL_Long)
 		.then((response) => {
 			if(response.status==200)
@@ -110,7 +108,6 @@ class URLShortener extends React.Component {
 	
 	ShortenURL()
 	{
-		console.log("ShortenURL");
 		//main function for shortening URL
 		let valid = this.ValidateURL(document.getElementById("urlLong").value);
 		if(valid)
