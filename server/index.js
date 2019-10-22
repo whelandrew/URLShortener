@@ -6,6 +6,7 @@ const connectOptions = {
  keepAlive: true,
  reconnectTries: Number.MAX_VALUE
 };
+
 //Connect to MongoDB
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoURI, connectOptions, (err, db) => {
@@ -27,8 +28,10 @@ app.use(function(req, res, next) {
   }
 });
 app.use(bodyParser.json());
+
 require("./models/UrlShorten");
 require("./routes/urlshorten")(app);
+
 const PORT = 7000;
 app.listen(PORT, () => {
  console.log(`Server started on port`, PORT);

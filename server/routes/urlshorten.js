@@ -3,16 +3,8 @@ const validUrl = require("valid-url");
 const UrlShorten = mongoose.model("UrlShorten");
 const shortid = require("shortid");
 const errorUrl='http://localhost/error';
-module.exports = app => {
-  app.get("/api/item/:code", async (req, res) => {
-    const urlCode = req.params.code;
-    const item = await UrlShorten.findOne({ urlCode: urlCode });
-    if (item) {
-      return res.redirect(item.originalUrl);
-    } else {
-      return res.redirect(errorUrl);
-    }
-  });
+
+module.exports = app => {  
   app.post("/api/item", async (req, res) => {	
     const { originalUrl, shortBaseUrl } = req.body;
 	//validate home url format
@@ -20,9 +12,7 @@ module.exports = app => {
     } else {
       return res
         .status(401)
-        .json(
-          "Invalid Base Url"
-        );
+        .json("The Base URL is invalid.");
     }
 	
 	//create an id for short url
@@ -53,7 +43,7 @@ module.exports = app => {
       return res
         .status(401)
         .json(
-          "Invalid Original Url"
+          "This is not a valid URL."
         );
     }
   });

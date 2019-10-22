@@ -38,7 +38,7 @@ class URLShortener extends React.Component {
 		  this.setState({URL_Short:json.data.shortUrl});
         })
         .catch(error => {
-			alert(error);
+			alert(error.response.data);
           this.setState({
             showLoading: false,
             showApiError: true,
