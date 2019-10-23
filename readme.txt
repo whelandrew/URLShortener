@@ -26,6 +26,7 @@ I wrote 3 test cases:
 
 * You may run across CORS on some sites. *
 
+10/22/2019 6:00PM - rewrote validation checks. Added routing for short url.
 
 10/22/2019 3:00 PM - Added a local server code for handling shortening (added to folder "server"). Removes the need for TinyURL.
 

@@ -2,7 +2,7 @@ var TinyURL = require('tinyurl');
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-
+import {linkToShortUrl} from "./Rerouter";;
 import { createShortUrl } from "./APIHelper";
 import constants from "./config/constants";
 
@@ -11,52 +11,60 @@ class URLShortener extends React.Component {
 		super(props);	
 				
 		this.state={
-			URL_Short:""
+			URL_Short:"",
+			urlCode:""
 		}
 	}
 
-	BuildShortURL()		
+	SetRequests()
 	{
 		let reqObj = {
 			originalUrl: document.getElementById("urlLong").value,
 			shortBaseUrl: constants.baseUrl
 		};
 		
-		createShortUrl(reqObj)
-        .then(json => {
-          setTimeout(() => {
-			  console.log(json.data);
-            this.setState({
-              showLoading: false,
-              showShortenUrl: true,
-              shortenUrl: json.data.shortUrl,
-			  useNewUrlParser: true
-            });
-          }, 0);
+		this.BuildShortURL(reqObj);
+	}
+
+	BuildShortURL(val)		
+	{	
+		createShortUrl(val)
+        .then(json => {			
 		  this.setState({URL_Short:json.data.shortUrl});
+		  this.setState({urlCode:json.data.urlCode});
         })
         .catch(error => {
 			alert(error.response.data);
-          this.setState({
-            showLoading: false,
-            showApiError: true,
-            apiError: "Server Error"
-          });
         });
+	}
+	
+	RerouteURL(state)
+	{
+		let params = {
+			code: state.urlCode
+		}
+		linkToShortUrl(params)
+		.then((json)=>{
+			//open redirect item
+			window.open(json.config.url);
+		})
+        .catch(error => {
+			alert(error.response.data);          
+        });		
 	}
 
 	render() {
 		let result;
 		if(this.state.URL_Short !="")
 		{
-			result = <div id="results"> Your Shortened URL : <a href={this.state.URL_Short} target="_blank">{this.state.URL_Short}</a></div>
+			result = <div> Your Shortened URL : <button id="results" onClick={()=>{this.RerouteURL(this.state)}}>{this.state.URL_Short}</button></div>
 		}
 		return (
 			<div>
 				<h1>URL Shortener</h1>
 				Type or Copy/Paste Your URL : <input id="urlLong" type="text" name="URL_Long"/>
 				<br />
-				<button onClick={this.BuildShortURL.bind(this)} > Shorten </button>
+				<button onClick={this.SetRequests.bind(this)} > Shorten </button>
 				{result}
 			</div>);
 	}
