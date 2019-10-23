@@ -6,6 +6,11 @@ class TestCases extends URLShortener
 {
 	constructor(props) {
 		super(props);		
+		
+		this.state={
+			URL_Short:"",
+			urlCode:""
+		}
 	}
 	
 	componentDidMount()
@@ -16,11 +21,11 @@ class TestCases extends URLShortener
 	NormalURL()
 	{			
 		let reqObj = {
-			originalUrl: "http://www.apple.com/iphone-7/",
+			originalUrl: "https://www.google.com/",
 			shortBaseUrl: "http://localhost"
 		};		
 		
-		this.BuildShortURL(reqObj);
+		document.getElementById("urlLong").value = reqObj.originalUrl;
 	}
 	
 	MissingHTTP()
@@ -29,18 +34,17 @@ class TestCases extends URLShortener
 			originalUrl: "www.apple.com/iphone-7/",
 			shortBaseUrl: "http://localhost"
 		};		
-		
-		this.BuildShortURL(reqObj);
+		document.getElementById("urlLong").value = reqObj.originalUrl;
 	}
 	
-	Missingcom()
+	BadURL()
 	{
 		let reqObj = {
-			originalUrl: "www.apple",
+			originalUrl: "qwertksls.dot",
 			shortBaseUrl: "http://localhost"
 		};		
 		
-		this.BuildShortURL(reqObj);
+		document.getElementById("urlLong").value = reqObj.originalUrl;
 	}
 	
 	render() {
@@ -52,7 +56,7 @@ class TestCases extends URLShortener
 					<br />
 					<button onClick={this.MissingHTTP.bind(this)}>Missing HTTP</button>
 					<br />
-					<button onClick={this.Missingcom.bind(this)}>Missing .com</button>
+					<button onClick={this.BadURL.bind(this)}>Bad URL</button>
 				</div>
 			</div>);
 	}

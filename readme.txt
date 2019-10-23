@@ -11,6 +11,11 @@ Notes: I wrote this program using React with Webpack and Babel extensions. I att
 
 After user input, the program will first verify that it is in the proper format for a URL. Then it will make a simple get call to verify that the it is a valid address. On a status rating of 200, the program will call TinyURL to receive a shortened address. This address will be displayed on the UI as an active link. It will open to the original page address in a new window.
 
+Installation:
+- This is a client project with a server project inside the same folder.
+- To start, "npm install" in the root directory.
+- Then, "npm install" in the folder "server"
+- You can "npm start" the client from root and "npm start" the server from "server"
 
 Direction:
 - Enter a URL into the textfield (either type or copy/paste)
