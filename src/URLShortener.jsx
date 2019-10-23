@@ -15,10 +15,8 @@ class URLShortener extends React.Component {
 		}
 	}
 
-	BuildShortURL()
-	{		
-		console.log("BuildShortURL");			
-		
+	BuildShortURL()		
+	{
 		let reqObj = {
 			originalUrl: document.getElementById("urlLong").value,
 			shortBaseUrl: constants.baseUrl
