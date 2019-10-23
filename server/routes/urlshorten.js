@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-//const validUrl = require("valid-url");
+
 const ValidUrl = require("./Validator/IsValid");
 const UrlShorten = mongoose.model("UrlShorten");
-//const shortid = require("shortid");
+
 const errorUrl='http://localhost/error';
 const shortMaker = require("./ShortMaker/ShortMaker");
 
